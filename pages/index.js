@@ -1,34 +1,8 @@
 import appConfig from "../config.json"; 
 import {Box, Button, Text, TextField, Image} from '@skynexui/components';
+import React from "react";
+import {useRouter} from 'next/router';
 
-function GlobalStyle(){
-    return(
-        <style global jsx>{`
-            * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            list-style: none;
-        }
-        body {
-            font-family: 'Open Sans', sans-serif;
-        }
-        /* App fit Height */ 
-        html, body, #__next {
-            min-height: 100vh;
-            display: flex;
-            flex: 1;
-        }
-        #__next {
-            flex: 1;
-        }
-        #__next > * {
-            flex: 1;
-        }
-        /* ./App fit Height */ 
-        `}</style>
-    )
-}
 
 function Titulo(props){
     const Tag = props.tag || 'h1';
@@ -38,10 +12,9 @@ function Titulo(props){
             
             <style jsx>{`
                 ${Tag} {
-
-                    color: ${appConfig.theme.colors.neutrals[400]};
-                    font-size: 25px;
-                    font-weight: 600; 
+                color: ${appConfig.theme.colors.neutrals[200]};
+                font-size: 25px;
+                font-weight: 600; 
                 }
             `}</style>
         </>
@@ -61,18 +34,30 @@ function Titulo(props){
 //  }
   
 //  export default HomePage
-
-export default function PaginaInicial() {
-    const username = 'williammoraesdeassis';
+function UrlExists(url) {
+  var http = new XMLHttpRequest();
+  http.open('HEAD', url, false);
+  console.log(http.statusCode);
   
+  if (http.statusCode != 404)
+      console.log('erro')
+}
+
+function validate (values) {
+  var url = `https://github.com/${values}.png`
+  UrlExists(url)
+}
+export default function PaginaInicial() {
+    //const username = 'williammoraesdeassis';
+       const [username, setUsername] = React.useState('williammoraesdeassis');
+       const roteamento = useRouter();
     return (
       <>
-        <GlobalStyle />
         <Box
           styleSheet={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            backgroundColor: appConfig.theme.colors.primary[500],
-            backgroundImage: 'url(https://virtualbackgrounds.site/wp-content/uploads/2022/01/cybercord.png)',
+            backgroundColor: appConfig.theme.colors.primary[100],
+            backgroundImage: 'url(https://virtualbackgrounds.site/wp-content/uploads/2022/01/wallpaperflare.com_wallpaper.jpg)',
             backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
           }}
         >
@@ -87,13 +72,18 @@ export default function PaginaInicial() {
               },
               width: '100%', maxWidth: '700px',
               borderRadius: '5px', padding: '32px', margin: '16px',
-              boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
+              boxShadow: '0px 0px 10px 5px #73FFFF',
               backgroundColor: appConfig.theme.colors.neutrals[700],
             }}
           >
             {/* Formulário */}
             <Box
               as="form"
+              onSubmit={function (infosDoEvento){
+                  infosDoEvento.preventDefault();
+                  window.location.href='/chat';
+                  roteamento.push('/chat');
+              }}
               styleSheet={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
@@ -105,6 +95,16 @@ export default function PaginaInicial() {
               </Text>
   
               <TextField
+                value={username}
+                onChange={function (event){
+                  //onde o valor está?
+                  const valor = event.target.value;
+                  //Trocar o valor do user name
+                  console.log(valor);
+                  setUsername(valor);
+                  validate(username);
+                  
+                }}
                 fullWidth
                 textFieldColors={{
                   neutral: {
