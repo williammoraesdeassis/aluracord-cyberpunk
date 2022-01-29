@@ -21,6 +21,7 @@ function escutaMensagemEmTempoReal(adicionaMensagem) {
 }
 
 export default function ChatPage() {
+ 
   /*
     Usuário
     - Usuário digita no campo textarea
@@ -58,6 +59,19 @@ export default function ChatPage() {
     });
   }, []);
 
+  function validaMensagem(mensagemParaValidar){
+      console.log('Texte de validação:', mensagemParaValidar.length)
+      if(mensagemParaValidar.length === 0 ){
+        return false;
+      }
+      else if(!(mensagemParaValidar.trim())){
+        return false;
+      }
+      else{
+        return true;
+      }
+  }
+
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
       id: listaDeMensagens.length + 1,
@@ -92,6 +106,7 @@ export default function ChatPage() {
         color: appConfig.theme.colors.neutrals["000"],
       }}
     >
+      
       <Box
         styleSheet={{
           display: "flex",
@@ -106,7 +121,9 @@ export default function ChatPage() {
           padding: "32px",
         }}
       >
-        <Header />
+        <Header  
+        value={usuarioLogado}
+        />
         <Box
           styleSheet={{
             position: "relative",
@@ -141,12 +158,14 @@ export default function ChatPage() {
                 const valor = event.target.value;
                 setMensagem(valor);
               }}
-              onKeyPress={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleNovaMensagem(mensagem);
-                }
-              }}
+                  onKeyPress={(event) => {
+                    if (event.key === "Enter") {
+                      if(validaMensagem(mensagem)){
+                        event.preventDefault();
+                        handleNovaMensagem(mensagem);
+                      }
+                    }
+                  }}
               placeholder="Insira sua mensagem aqui..."
               type="textarea"
               styleSheet={{
@@ -168,11 +187,13 @@ export default function ChatPage() {
             />
             
                 <Button
+                colorVariant="positive"
                 iconName="arrowRight"
                // label=""
                 onClick={(event) =>{
-                  if(event.target){handleNovaMensagem(mensagem)}
-                  ;}}
+                  if(validaMensagem(mensagem)){
+                    if(event.target){handleNovaMensagem(mensagem)}
+                }}}
                   styleSheet={{
                         borderRadius: '50%',
                         padding: '0 3px 0 0',
@@ -185,8 +206,8 @@ export default function ChatPage() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                      backgroundColor: appConfig.theme.colors.neutrals[300],
-                      filter: React.onMouseOver  ? 'grayscale(0)' : 'grayscale(1)',
+                        backgroundColor: 'green',
+                      filter: React.onMouseOver  ? 'grayscale(0)' : 'grayscale(0)',
                       hover: {
                         filter: 'grayscale(0)',
                       }
@@ -200,7 +221,9 @@ export default function ChatPage() {
   );
 }
 
-function Header() {
+function Header(logado) {
+  const user = logado.value;
+  console.log(`testa ${user}:`)
   return (
     <>
       <Box
@@ -212,7 +235,30 @@ function Header() {
           justifyContent: "space-between",
         }}
       >
-        <Text variant="heading5">Chat</Text>
+        <Box
+          styleSheet={{
+            width: "100%",
+            marginBottom: "16px",
+            display: "inline-block",
+            alignItems: "center",
+            justifyContent: "left",
+          }}
+        >
+          <Image
+                styleSheet={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  marginRight: "8px",
+                  alignItems: 'left',
+                }}
+                src={`https://github.com/${user}.png`}
+              />  
+        <Text variant="heading5"
+        >{user}</Text>
+        </Box>
+
         <Button
           variant="tertiary"
           colorVariant="neutral"
@@ -267,7 +313,17 @@ function MessageList(props) {
                 }}
                 src={`https://github.com/${mensagem.de}.png`}
               />
-              <Text tag="strong">{mensagem.de}</Text>
+              <Text tag="a"
+                    href={`https://github.com/${mensagem.de}`}
+                    target="_blank"
+                styleSheet={{
+                  color: appConfig.theme.colors.neutrals[200],
+                  textDecoration: "none",
+                  hover: {
+                    color: appConfig.theme.colors.primary[500],
+                  },
+                }}
+              >{mensagem.de}</Text>
               <Text
                 styleSheet={{
                   fontSize: "10px",
@@ -276,7 +332,10 @@ function MessageList(props) {
                 }}
                 tag="span"
               >
-                {new Date().toLocaleDateString()}
+                {new Date().toLocaleString("pt-BR", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })}
               </Text>
             </Box>
             {/*[Declarativo}*/}
